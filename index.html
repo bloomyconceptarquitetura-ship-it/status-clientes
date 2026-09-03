@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Andamento do Projeto — Bloomy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --accent:#490000;
@@ -30,6 +33,9 @@
   .topo, .caixa, .rodape{ width:100%; max-width:480px; }
   @media (min-width:760px){
     .topo, .caixa, .rodape{ max-width:920px; }
+  }
+  @media (min-width:1180px){
+    .topo, .caixa, .rodape{ max-width:1180px; }
   }
 
   .topo{ margin-bottom:26px; }
@@ -69,7 +75,10 @@
   .etapa:last-child .col-conteudo{ padding-bottom:0; }
   .nome-etapa{ font-size:16px; font-weight:600; margin-top:4px; color:var(--carvao); }
   .etapa.aFazer .nome-etapa{ color:var(--muted); }
-  .desc-etapa{ font-size:13px; color:var(--muted); line-height:1.5; margin-top:5px; max-width:420px; }
+  .frase-etapa{ font-size:14px; font-weight:600; font-style:italic; color:var(--accent); margin-top:6px; line-height:1.4; max-width:440px; }
+  .etapa.aFazer .frase-etapa{ color:var(--muted); }
+  .desc-etapa{ font-size:13px; color:var(--muted); line-height:1.55; margin-top:6px; max-width:440px; }
+  .desc-etapa + .desc-etapa{ margin-top:10px; }
   .tag-atual{
     display:inline-block; margin-left:8px; font-size:10px; font-weight:700; text-transform:uppercase;
     letter-spacing:.04em; color:var(--branco); background:var(--accent); border-radius:999px; padding:2px 10px; vertical-align:2px;
@@ -92,9 +101,11 @@
   .no.aFazer{ background:var(--branco); color:var(--muted); border:2px solid var(--muted); opacity:.5; }
 
   .rotulos-horizontal{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:16px; }
-  .rotulo{ text-align:center; padding:0 4px; }
+  .rotulo{ text-align:center; padding:0 6px; }
   .rotulo .nome-etapa{ font-size:13.5px; line-height:1.35; margin-top:0; }
-  .rotulo .desc-etapa{ font-size:11.5px; margin-top:5px; max-width:none; }
+  .rotulo .frase-etapa{ font-size:12px; margin-top:6px; max-width:none; }
+  .rotulo .desc-etapa{ font-size:11px; line-height:1.5; margin-top:6px; max-width:none; }
+  .rotulo .desc-etapa + .desc-etapa{ margin-top:8px; }
   .rotulo .tag-atual{ display:block; margin:6px auto 0; width:max-content; }
   .rotulo .datas-etapa{ font-size:11px; margin-top:5px; }
   .rotulo .datas-etapa span{ display:block; margin-left:0!important; }
@@ -154,14 +165,60 @@ function mostrarErro(msg){
     '<div class="caixa erro"><h1>Link não encontrado</h1><p>'+msg+'</p></div>';
 }
 
-// breve explicação do que acontece em cada etapa (mostrada junto do nome)
+// breve explicação do que acontece em cada etapa (mostrada junto do nome):
+// "frase" é a chamada em destaque, "texto" é um ou mais parágrafos de apoio.
 const DESCRICAO_ETAPA = {
-  "PN": "A primeira conversa: a gente ouve o que você quer e junta as informações — é a largada do projeto.",
-  "EP": "O primeiro rascunho do layout, a planta ainda solta, pra alinhar a ideia geral.",
-  "AP": "Já é a cara final do projeto — volumetria, 3D e materiais definidos, só falta detalhar.",
-  "PE": "As pranchas técnicas, detalhadas o bastante pra marceneiro, pedreiro e fornecedor executarem.",
-  "Memorial": "O documento final que resume os materiais escolhidos — o fecho do projeto."
+  "PN": {
+    frase: "O projeto começa por você.",
+    texto: [
+      "Nesta primeira etapa, reunimos suas necessidades, desejos, referências e todas as informações importantes sobre o espaço. É aqui que definimos as prioridades e construímos a base que vai orientar todo o desenvolvimento do projeto."
+    ]
+  },
+  "EP": {
+    frase: "As primeiras ideias começam a ganhar forma.",
+    texto: [
+      "Apresentamos a proposta inicial do projeto, com layout, conceito, referências de materiais e paleta de cores. É o momento de alinhar a direção estética e funcional do espaço antes de seguirmos para a próxima etapa."
+    ]
+  },
+  "AP": {
+    frase: "Aqui o projeto ganha vida.",
+    texto: [
+      "Com o conceito aprovado, desenvolvemos o projeto em 3D e definimos volumetrias, materiais, acabamentos e os principais elementos de cada ambiente. Nesta etapa, você já consegue visualizar com clareza como será o resultado final."
+    ]
+  },
+  "PE": {
+    frase: "Transformamos as ideias em informações para a obra.",
+    texto: [
+      "Nesta etapa, detalhamos revestimentos, mobiliário planejado, pontos, medidas e todas as informações necessárias para orientar marceneiros, pedreiros, fornecedores e demais profissionais envolvidos na execução do projeto."
+    ]
+  },
+  "Memorial": {
+    frase: "Tudo organizado para facilitar suas escolhas e compras.",
+    texto: [
+      "Reunimos os móveis, luminárias, acabamentos e demais itens especificados no projeto, com referências, dimensões, cores e links para compra. Assim, fica mais fácil encontrar exatamente o que foi escolhido ou opções semelhantes que mantenham a proposta do projeto.",
+      "Como bônus, você também recebe uma lista das mãos de obra necessárias para cada etapa da execução, acompanhada de um checklist para ajudar na organização e no acompanhamento da obra."
+    ]
+  }
 };
+
+function montarDescricaoEtapa(sigla){
+  const info = DESCRICAO_ETAPA[sigla];
+  if(!info) return null;
+  const frag = document.createDocumentFragment();
+  if(info.frase){
+    const frase = document.createElement("div");
+    frase.className = "frase-etapa";
+    frase.textContent = info.frase;
+    frag.appendChild(frase);
+  }
+  (info.texto || []).forEach(paragrafo=>{
+    const p = document.createElement("div");
+    p.className = "desc-etapa";
+    p.textContent = paragrafo;
+    frag.appendChild(p);
+  });
+  return frag;
+}
 
 const CONECTOR_SVG = '<svg class="conector" viewBox="0 0 34 44" preserveAspectRatio="none"><path d="M17,0 C4,10 30,16 17,26 C6,32 28,36 17,44"></path></svg>';
 
@@ -212,12 +269,8 @@ function montarVertical(etapas){
     }
     colConteudo.appendChild(nome);
 
-    if(DESCRICAO_ETAPA[e.sigla]){
-      const desc = document.createElement("div");
-      desc.className = "desc-etapa";
-      desc.textContent = DESCRICAO_ETAPA[e.sigla];
-      colConteudo.appendChild(desc);
-    }
+    const descFrag = montarDescricaoEtapa(e.sigla);
+    if(descFrag) colConteudo.appendChild(descFrag);
 
     if(e.inicio || e.conclusao){
       const datas = document.createElement("div");
@@ -277,12 +330,8 @@ function montarHorizontal(etapas){
       tag.textContent = "você está aqui";
       rot.appendChild(tag);
     }
-    if(DESCRICAO_ETAPA[e.sigla]){
-      const desc = document.createElement("div");
-      desc.className = "desc-etapa";
-      desc.textContent = DESCRICAO_ETAPA[e.sigla];
-      rot.appendChild(desc);
-    }
+    const descFragH = montarDescricaoEtapa(e.sigla);
+    if(descFragH) rot.appendChild(descFragH);
     if(e.inicio || e.conclusao){
       const datas = document.createElement("div");
       datas.className = "datas-etapa";
