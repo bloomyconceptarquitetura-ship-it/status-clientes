@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Andamento do Projeto — Bloomy</title>
+<style>
+  :root{
+    --accent:#490000;
+    --bege:#E8E1D6;
+    --carvao:#252422;
+    --muted:#8a8378;
+    --ink:#2b2620;
+    --branco:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    position:relative;
+    min-height:100vh;
+    background:var(--bege);
+    color:var(--ink);
+    font-family:'Poppins',-apple-system,BlinkMacSystemFont,sans-serif;
+    display:flex; flex-direction:column; align-items:center;
+    padding:34px 18px 50px;
+  }
+  #grao{ position:fixed; inset:0; opacity:.05; mix-blend-mode:multiply; pointer-events:none; }
+
+  .topo, .caixa, .rodape{ width:100%; max-width:480px; }
+  @media (min-width:760px){
+    .topo, .caixa, .rodape{ max-width:920px; }
+  }
+
+  .topo{ margin-bottom:26px; }
+  .topo .marca{ display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+  .topo .marca .negocio{ color:var(--carvao); opacity:.6; }
+  .topo .marca .rotulo{ color:var(--accent); }
+  .topo h1{ font-size:30px; margin:14px 0 0; font-weight:700; line-height:1.12; color:var(--carvao); text-wrap:balance; }
+  .topo .nota{
+    margin-top:10px; font-family:'Caveat',cursive; font-size:19px; font-weight:600; color:var(--accent);
+    transform:rotate(-1.5deg); line-height:1.3;
+  }
+  @media (min-width:760px){
+    .topo h1{ font-size:36px; }
+    .topo .nota{ font-size:22px; }
+  }
+
+  .caixa{
+    background:var(--branco); border-radius:16px;
+    padding:26px 22px 24px;
+    box-shadow:0 2px 20px rgba(37,36,34,.08);
+  }
+  @media (min-width:760px){
+    .caixa{ padding:40px 48px 34px; }
+  }
+
+  /* ---------- versão vertical (telas estreitas) ---------- */
+  .linha-vertical{ display:flex; flex-direction:column; }
+  .etapa{ display:flex; gap:14px; }
+  .col-num{ display:flex; flex-direction:column; align-items:center; width:52px; flex-shrink:0; }
+  .numero{ font-size:32px; font-weight:700; line-height:1; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .etapa.concluida .numero, .etapa.atual .numero{ color:var(--accent); }
+  .conector{ width:34px; height:44px; margin-top:2px; }
+  .conector path{ fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linecap:round; opacity:.45; }
+  .etapa.aFazer .conector path{ opacity:.22; }
+
+  .col-conteudo{ flex:1; padding-bottom:26px; }
+  .etapa:last-child .col-conteudo{ padding-bottom:0; }
+  .nome-etapa{ font-size:16px; font-weight:600; margin-top:4px; color:var(--carvao); }
+  .etapa.aFazer .nome-etapa{ color:var(--muted); }
+  .tag-atual{
+    display:inline-block; margin-left:8px; font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.04em; color:var(--branco); background:var(--accent); border-radius:999px; padding:2px 10px; vertical-align:2px;
+  }
+  .datas-etapa{ font-size:12.5px; color:var(--muted); margin-top:4px; font-variant-numeric:tabular-nums; }
+  .datas-etapa span+span{ margin-left:14px; }
+
+  /* ---------- versão horizontal (telas largas) ---------- */
+  .linha-horizontal{ display:none; }
+  .curva-area{ position:relative; width:100%; aspect-ratio:900/200; }
+  .curva-area svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .curva-area svg path{ fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linecap:round; opacity:.5; }
+  .no{
+    position:absolute; width:52px; height:52px; margin:-26px 0 0 -26px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:17px; font-weight:700; box-shadow:0 3px 12px rgba(37,36,34,.12);
+    font-variant-numeric:tabular-nums;
+  }
+  .no.concluida, .no.atual{ background:var(--accent); color:var(--branco); }
+  .no.aFazer{ background:var(--branco); color:var(--muted); border:2px solid var(--muted); opacity:.5; }
+
+  .rotulos-horizontal{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:16px; }
+  .rotulo{ text-align:center; padding:0 4px; }
+  .rotulo .nome-etapa{ font-size:13.5px; line-height:1.35; margin-top:0; }
+  .rotulo .tag-atual{ display:block; margin:6px auto 0; width:max-content; }
+  .rotulo .datas-etapa{ font-size:11px; margin-top:5px; }
+  .rotulo .datas-etapa span{ display:block; margin-left:0!important; }
+
+  @media (min-width:760px){
+    .linha-vertical{ display:none; }
+    .linha-horizontal{ display:block; }
+  }
+
+  .rodape{ margin-top:26px; }
+  .rodape .aviso{ text-align:center; font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:16px; }
+  .rodape .marca-fim{ text-align:center; }
+  .rodape .marca-fim .nome{ font-size:15px; font-weight:700; color:var(--carvao); }
+  .rodape .marca-fim .tagline{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+
+  .erro{ text-align:center; max-width:340px; }
+  .erro h1{ font-size:18px; margin-bottom:8px; color:var(--carvao); }
+  .erro p{ font-size:13.5px; color:var(--muted); line-height:1.5; }
+  .carregando{ font-size:13px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<svg id="grao" xmlns="http://www.w3.org/2000/svg">
+  <filter id="graoPapel">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="ruido"></feTurbulence>
+    <feColorMatrix in="ruido" type="matrix" values="0 0 0 0 0.14, 0 0 0 0 0.14, 0 0 0 0 0.13, 0 0 0 0.9 0"></feColorMatrix>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#graoPapel)"></rect>
+</svg>
+
+<div id="topo" class="topo" style="display:none">
+  <div class="marca">
+    <span class="negocio" id="negocio"></span>
+    <span class="rotulo">processo de projeto</span>
+  </div>
+  <h1 id="titulo"></h1>
+  <div class="nota">esse é o caminho que seu projeto<br>percorre até ficar pronto</div>
+</div>
+<div id="conteudo">
+  <p class="carregando">Carregando...</p>
+</div>
+
+<script>
+// dados públicos de cada projeto (só etapa e datas — nunca financeiro,
+// observações internas, checklist, responsável ou prazo), um por código de
+// link. Atualizado pela Bloomy sempre que a etapa de um projeto muda.
+const DADOS = {"b7f8d0e196df42f47af8b9f1": {"titulo": "Adilson e Sabrina", "negocio": "Bloomy Arquitetura", "corAccent": "#490000", "etapas": [{"sigla": "PN", "nome": "Programa de Necessidades", "atual": true, "concluida": false, "inicio": null, "conclusao": null}, {"sigla": "EP", "nome": "Estudo Preliminar", "atual": false, "concluida": false, "inicio": null, "conclusao": null}, {"sigla": "AP", "nome": "Anteprojeto", "atual": false, "concluida": false, "inicio": null, "conclusao": null}, {"sigla": "PE", "nome": "Projeto Executivo", "atual": false, "concluida": false, "inicio": null, "conclusao": null}, {"sigla": "Memorial", "nome": "Memorial Descritivo", "atual": false, "concluida": false, "inicio": null, "conclusao": null}]}, "1ed06cd0a04c3907872ef8a5": {"titulo": "Camila e Antônio", "negocio": "Bloomy Arquitetura", "corAccent": "#490000", "etapas": [{"sigla": "PN", "nome": "Programa de Necessidades", "atual": false, "concluida": true, "inicio": null, "conclusao": "2026-09-01"}, {"sigla": "EP", "nome": "Estudo Preliminar", "atual": false, "concluida": true, "inicio": null, "conclusao": null}, {"sigla": "AP", "nome": "Anteprojeto", "atual": true, "concluida": false, "inicio": "2026-09-01", "conclusao": null}, {"sigla": "PE", "nome": "Projeto Executivo", "atual": false, "concluida": false, "inicio": null, "conclusao": null}, {"sigla": "Memorial", "nome": "Memorial Descritivo", "atual": false, "concluida": false, "inicio": null, "conclusao": null}]}};
+
+function pegarToken(){
+  const params = new URLSearchParams(location.search);
+  return params.get("token") || "";
+}
+
+function mostrarErro(msg){
+  document.getElementById("conteudo").innerHTML =
+    '<div class="caixa erro"><h1>Link não encontrado</h1><p>'+msg+'</p></div>';
+}
+
+const CONECTOR_SVG = '<svg class="conector" viewBox="0 0 34 44" preserveAspectRatio="none"><path d="M17,0 C4,10 30,16 17,26 C6,32 28,36 17,44"></path></svg>';
+
+// 5 pontos formando uma onda da esquerda pra direita, num viewBox de 900x200.
+const PONTOS_ONDA = [ [70,130], [260,60], [450,130], [640,60], [830,130] ];
+
+function curvaSuave(pontos){
+  const p = [pontos[0], ...pontos, pontos[pontos.length-1]];
+  let d = `M${pontos[0][0]},${pontos[0][1]} `;
+  for(let i=1; i<p.length-2; i++){
+    const p0=p[i-1], p1=p[i], p2=p[i+1], p3=p[i+2];
+    const c1 = [p1[0]+(p2[0]-p0[0])/6, p1[1]+(p2[1]-p0[1])/6];
+    const c2 = [p2[0]-(p3[0]-p1[0])/6, p2[1]-(p3[1]-p1[1])/6];
+    d += `C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0]},${p2[1]} `;
+  }
+  return d.trim();
+}
+
+function montarVertical(etapas){
+  const lt = document.createElement("div");
+  lt.className = "linha-vertical";
+  etapas.forEach((e, i)=>{
+    const cls = e.concluida ? "concluida" : (e.atual ? "atual" : "aFazer");
+    const item = document.createElement("div");
+    item.className = "etapa " + cls;
+
+    const colNum = document.createElement("div");
+    colNum.className = "col-num";
+    const num = document.createElement("div");
+    num.className = "numero";
+    num.textContent = String(i+1).padStart(2,"0");
+    colNum.appendChild(num);
+    if(i < etapas.length - 1){
+      colNum.insertAdjacentHTML("beforeend", CONECTOR_SVG);
+    }
+    item.appendChild(colNum);
+
+    const colConteudo = document.createElement("div");
+    colConteudo.className = "col-conteudo";
+    const nome = document.createElement("div");
+    nome.className = "nome-etapa";
+    nome.textContent = e.sigla + " · " + e.nome;
+    if(e.atual){
+      const tag = document.createElement("span");
+      tag.className = "tag-atual";
+      tag.textContent = "você está aqui";
+      nome.appendChild(tag);
+    }
+    colConteudo.appendChild(nome);
+
+    if(e.inicio || e.conclusao){
+      const datas = document.createElement("div");
+      datas.className = "datas-etapa";
+      if(e.inicio){ const s=document.createElement("span"); s.textContent="início: "+e.inicio; datas.appendChild(s); }
+      if(e.conclusao){ const s=document.createElement("span"); s.textContent="conclusão: "+e.conclusao; datas.appendChild(s); }
+      colConteudo.appendChild(datas);
+    }
+    item.appendChild(colConteudo);
+
+    lt.appendChild(item);
+  });
+  return lt;
+}
+
+function montarHorizontal(etapas){
+  const wrap = document.createElement("div");
+  wrap.className = "linha-horizontal";
+
+  const curvaArea = document.createElement("div");
+  curvaArea.className = "curva-area";
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("viewBox", "0 0 900 200");
+  svg.setAttribute("preserveAspectRatio", "none");
+  const path = document.createElementNS(svgNS, "path");
+  path.setAttribute("d", curvaSuave(PONTOS_ONDA));
+  svg.appendChild(path);
+  curvaArea.appendChild(svg);
+
+  etapas.forEach((e, i)=>{
+    const cls = e.concluida ? "concluida" : (e.atual ? "atual" : "aFazer");
+    const [x,y] = PONTOS_ONDA[i] || PONTOS_ONDA[PONTOS_ONDA.length-1];
+    const no = document.createElement("div");
+    no.className = "no " + cls;
+    no.style.left = (x/900*100) + "%";
+    no.style.top = (y/200*100) + "%";
+    no.textContent = String(i+1).padStart(2,"0");
+    curvaArea.appendChild(no);
+  });
+
+  wrap.appendChild(curvaArea);
+
+  const rotulos = document.createElement("div");
+  rotulos.className = "rotulos-horizontal";
+  etapas.forEach((e)=>{
+    const cls = e.concluida ? "concluida" : (e.atual ? "atual" : "aFazer");
+    const rot = document.createElement("div");
+    rot.className = "rotulo " + cls;
+    const nome = document.createElement("div");
+    nome.className = "nome-etapa";
+    nome.textContent = e.sigla + " · " + e.nome;
+    rot.appendChild(nome);
+    if(e.atual){
+      const tag = document.createElement("span");
+      tag.className = "tag-atual";
+      tag.textContent = "você está aqui";
+      rot.appendChild(tag);
+    }
+    if(e.inicio || e.conclusao){
+      const datas = document.createElement("div");
+      datas.className = "datas-etapa";
+      if(e.inicio){ const s=document.createElement("span"); s.textContent="início: "+e.inicio; datas.appendChild(s); }
+      if(e.conclusao){ const s=document.createElement("span"); s.textContent="conclusão: "+e.conclusao; datas.appendChild(s); }
+      rot.appendChild(datas);
+    }
+    rotulos.appendChild(rot);
+  });
+  wrap.appendChild(rotulos);
+
+  return wrap;
+}
+
+function montarLinhaTempo(dados){
+  const cor = dados.corAccent || "#490000";
+  document.documentElement.style.setProperty("--accent", cor);
+
+  document.getElementById("negocio").textContent = dados.negocio || "";
+  document.getElementById("titulo").textContent = dados.titulo || "";
+  document.getElementById("topo").style.display = "block";
+
+  const wrap = document.createElement("div");
+  wrap.className = "caixa";
+  const etapas = dados.etapas || [];
+  wrap.appendChild(montarVertical(etapas));
+  wrap.appendChild(montarHorizontal(etapas));
+
+  const conteudo = document.getElementById("conteudo");
+  conteudo.innerHTML = "";
+  conteudo.appendChild(wrap);
+
+  const rodape = document.createElement("div");
+  rodape.className = "rodape";
+  rodape.innerHTML =
+    '<div class="aviso">Qualquer dúvida sobre o andamento, é só chamar a gente.</div>' +
+    '<div class="marca-fim"><div class="nome">'+ (dados.negocio || "Bloomy Arquitetura") +'</div><div class="tagline">Arquitetura &amp; Interiores</div></div>';
+  conteudo.appendChild(rodape);
+}
+
+function carregar(){
+  const token = pegarToken();
+  if(!token){ mostrarErro("Esse link está incompleto. Confirme com a Bloomy Arquitetura o link certo."); return; }
+  const dados = DADOS[token];
+  if(!dados){ mostrarErro("Não encontramos nenhum projeto com esse link. Confirme com a Bloomy Arquitetura o link certo."); return; }
+  montarLinhaTempo(dados);
+}
+carregar();
+</script>
+</body>
+</html>
