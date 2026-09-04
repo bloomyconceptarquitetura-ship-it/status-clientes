@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Painel Bloomy — espelho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --accent:#490000;
+    --sidebar:#252422;
+    --sidebar-ink:#E8E1D6;
+    --oliva:#725E2C;
+    --bege:#E8E1D6;
+    --fundo:#FBF9F6;
+    --papel:#ffffff;
+    --linha:#E7E1D6;
+    --texto:#2b2622;
+    --texto-suave:#6b6258;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:var(--fundo);
+    color:var(--texto);
+    min-height:100vh;
+  }
+  a{color:inherit;}
+
+  /* ---------- tela de senha ---------- */
+  #tela-senha{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:var(--sidebar);
+  }
+  .caixa-senha{
+    background:var(--papel);
+    border-radius:16px;
+    padding:40px 32px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .caixa-senha h1{
+    font-size:22px;
+    margin:0 0 6px;
+    color:var(--accent);
+  }
+  .caixa-senha p{
+    color:var(--texto-suave);
+    font-size:14px;
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+  .caixa-senha input{
+    width:100%;
+    padding:13px 14px;
+    border-radius:10px;
+    border:1.5px solid var(--linha);
+    font-size:16px;
+    font-family:inherit;
+    margin-bottom:12px;
+    outline:none;
+  }
+  .caixa-senha input:focus{border-color:var(--accent);}
+  .caixa-senha button{
+    width:100%;
+    padding:13px 14px;
+    border-radius:10px;
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .caixa-senha button:active{opacity:.85;}
+  .erro-senha{
+    color:#a4243b;
+    font-size:13px;
+    margin-top:12px;
+    min-height:16px;
+  }
+
+  /* ---------- layout do painel ---------- */
+  #painel{display:none; min-height:100vh;}
+  #painel.ativo{display:flex;}
+
+  .sidebar{
+    width:230px;
+    flex:none;
+    background:var(--sidebar);
+    color:var(--sidebar-ink);
+    padding:26px 16px;
+    min-height:100vh;
+    position:sticky;
+    top:0;
+    align-self:flex-start;
+  }
+  .sidebar .marca{
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:.02em;
+    padding:0 8px 6px;
+  }
+  .sidebar .marca small{
+    display:block;
+    font-weight:400;
+    font-size:11px;
+    opacity:.6;
+    margin-top:2px;
+  }
+  .nav{list-style:none; margin:22px 0 0; padding:0;}
+  .nav li{margin-bottom:4px;}
+  .nav button{
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    color:var(--sidebar-ink);
+    opacity:.72;
+    font-family:inherit;
+    font-size:14px;
+    padding:10px 10px;
+    border-radius:9px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .nav button .num{
+    width:20px; height:20px;
+    border-radius:50%;
+    background:rgba(232,225,214,.16);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:600; flex:none;
+  }
+  .nav button:hover{opacity:1; background:rgba(232,225,214,.08);}
+  .nav button.ativo{
+    opacity:1;
+    background:rgba(232,225,214,.14);
+    font-weight:600;
+  }
+  .nav button.ativo .num{background:var(--accent); color:#fff;}
+  .sidebar .rodape-nav{
+    margin-top:28px;
+    padding:12px 10px 0;
+    border-top:1px solid rgba(232,225,214,.15);
+    font-size:11px;
+    opacity:.55;
+    line-height:1.5;
+  }
+
+  .conteudo{flex:1; min-width:0; padding:32px 36px 60px;}
+  .topo-conteudo{
+    display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    margin-bottom:6px;
+  }
+  .topo-conteudo h2{
+    font-size:24px; margin:0; color:var(--accent);
+  }
+  .atualizado{
+    font-size:12px; color:var(--texto-suave);
+  }
+
+  .secao{display:none;}
+  .secao.ativa{display:block;}
+
+  .bloco{
+    background:var(--papel);
+    border:1px solid var(--linha);
+    border-radius:14px;
+    padding:20px 22px;
+    margin-top:18px;
+  }
+  .bloco h3{
+    margin:0 0 4px;
+    font-size:16px;
+    color:var(--texto);
+  }
+  .bloco .desc{
+    font-size:12.5px;
+    color:var(--texto-suave);
+    margin:0 0 16px;
+    line-height:1.5;
+  }
+
+  /* cartões genéricos */
+  .grade-cartoes{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:12px;}
+  .cartao{
+    border:1px solid var(--linha);
+    border-left:4px solid var(--oliva);
+    border-radius:10px;
+    padding:12px 14px;
+    background:#fffefc;
+  }
+  .cartao .titulo{font-weight:600; font-size:13.5px; margin-bottom:6px;}
+  .cartao .campo{font-size:12px; color:var(--texto-suave); margin-top:2px;}
+  .cartao .campo b{color:var(--texto); font-weight:500;}
+  .vazio{
+    font-size:13px; color:var(--texto-suave); font-style:italic; padding:6px 0;
+  }
+
+  /* kanban */
+  .kanban{display:grid; grid-template-columns:repeat(5,minmax(148px,1fr)); gap:10px; overflow-x:auto;}
+  .kanban-col{background:#f6f2ec; border-radius:10px; padding:10px;}
+  .kanban-col h4{
+    margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--texto-suave); display:flex; justify-content:space-between;
+  }
+  .kanban-col .cartao{margin-bottom:8px; background:#fff;}
+
+  /* funil */
+  .funil{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  .funil-col{background:#f6f2ec; border-radius:10px; padding:10px;}
+  .funil-col h4{margin:0 0 8px; font-size:12px; text-transform:uppercase; color:var(--texto-suave);}
+
+  /* checklist */
+  .checklist{list-style:none; margin:0; padding:0;}
+  .checklist li{
+    display:flex; align-items:flex-start; gap:9px;
+    padding:7px 0; border-bottom:1px solid var(--linha); font-size:13.5px;
+  }
+  .checklist li:last-child{border-bottom:none;}
+  .checklist .caixa{
+    width:16px; height:16px; border-radius:4px; border:1.5px solid var(--oliva);
+    flex:none; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:11px;
+  }
+  .checklist li.feito .caixa{background:var(--oliva); color:#fff;}
+  .checklist li.feito span.txt{color:var(--texto-suave); text-decoration:line-through;}
+
+  /* stats */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px;}
+  .stat-tile{
+    background:#f6f2ec; border-radius:12px; padding:16px 16px;
+    border-left:4px solid var(--accent);
+  }
+  .stat-tile .rotulo{font-size:12px; color:var(--texto-suave); margin-bottom:4px;}
+  .stat-tile .valor{font-size:19px; font-weight:700; color:var(--texto); line-height:1.3;}
+
+  /* texto livre */
+  .texto-corpo{font-size:13.5px; line-height:1.65; white-space:pre-wrap;}
+  .texto-md{white-space:normal;}
+  .texto-md p{margin:0 0 12px;}
+  .texto-md p:last-child{margin-bottom:0;}
+  .texto-md ul{margin:0 0 12px; padding-left:20px;}
+  .texto-md li{margin-bottom:3px;}
+
+  /* calendário / agenda */
+  .lista-eventos{list-style:none; margin:0; padding:0;}
+  .lista-eventos li{
+    display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--linha); font-size:13px;
+  }
+  .lista-eventos li:last-child{border-bottom:none;}
+  .lista-eventos .data{
+    flex:none; width:78px; font-weight:600; color:var(--accent); font-size:12px;
+  }
+
+  .resumo-bloom{
+    background:linear-gradient(135deg, var(--accent), #6b1414);
+    color:#fff; border-radius:14px; padding:22px 24px; margin-top:18px;
+  }
+  .resumo-bloom h3{margin:0 0 8px; font-size:15px; opacity:.9;}
+  .resumo-bloom .texto-corpo{color:#fff; font-size:13.5px;}
+
+  @media (max-width: 860px){
+    #painel.ativo{flex-direction:column;}
+    .sidebar{width:100%; min-height:auto; position:static;}
+    .nav{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px;}
+    .nav li{margin:0;}
+    .conteudo{padding:22px 16px 50px;}
+    .kanban{grid-template-columns:1fr 1fr;}
+    .funil{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div id="tela-senha">
+  <div class="caixa-senha">
+    <h1>Painel Bloomy</h1>
+    <p>Espelho só de leitura do painel interno. Digite a senha da equipe pra ver.</p>
+    <input type="password" id="campo-senha" placeholder="Senha" autocomplete="current-password" />
+    <button id="botao-entrar">Entrar</button>
+    <div class="erro-senha" id="erro-senha"></div>
+  </div>
+</div>
+
+<div id="painel">
+  <div class="sidebar">
+    <div class="marca">Painel Bloomy<small>espelho — só leitura</small></div>
+    <ul class="nav" id="nav"></ul>
+    <div class="rodape-nav" id="rodape-nav"></div>
+  </div>
+  <div class="conteudo">
+    <div class="topo-conteudo">
+      <h2 id="titulo-secao"></h2>
+      <div class="atualizado" id="atualizado"></div>
+    </div>
+    <div id="secoes"></div>
+  </div>
+</div>
+
+<script>
+/*__PACOTE_CIFRADO__*/
+</script>
+<script>
+(function(){
+  "use strict";
+
+  function b64paraBytes(b64){
+    const bin = atob(b64);
+    const out = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  async function derivarChave(senha, saltBytes){
+    const enc = new TextEncoder();
+    const materialBase = await crypto.subtle.importKey("raw", enc.encode(senha), {name:"PBKDF2"}, false, ["deriveKey"]);
+    return crypto.subtle.deriveKey(
+      { name:"PBKDF2", salt: saltBytes, iterations: 210000, hash: "SHA-256" },
+      materialBase,
+      { name:"AES-GCM", length:256 },
+      false,
+      ["decrypt"]
+    );
+  }
+
+  async function tentarAbrir(senha){
+    const pacote = window.__PACOTE__;
+    if (!pacote) throw new Error("sem dados embutidos");
+    const salt = b64paraBytes(pacote.salt);
+    const iv = b64paraBytes(pacote.iv);
+    const dados = b64paraBytes(pacote.dados);
+    const chave = await derivarChave(senha, salt);
+    const claro = await crypto.subtle.decrypt({name:"AES-GCM", iv}, chave, dados);
+    const texto = new TextDecoder().decode(claro);
+    return JSON.parse(texto);
+  }
+
+  const campoSenha = document.getElementById("campo-senha");
+  const botaoEntrar = document.getElementById("botao-entrar");
+  const erroSenha = document.getElementById("erro-senha");
+  const telaSenha = document.getElementById("tela-senha");
+  const painelEl = document.getElementById("painel");
+
+  async function entrar(){
+    const senha = campoSenha.value || "";
+    erroSenha.textContent = "";
+    botaoEntrar.disabled = true;
+    botaoEntrar.textContent = "Entrando…";
+    try {
+      const estado = await tentarAbrir(senha);
+      montarPainel(estado);
+      telaSenha.style.display = "none";
+      painelEl.classList.add("ativo");
+      try { sessionStorage.setItem("espelhoSenhaOk", "1"); } catch(e){}
+    } catch (e) {
+      erroSenha.textContent = "Senha errada — tenta de novo.";
+      campoSenha.value = "";
+      campoSenha.focus();
+    } finally {
+      botaoEntrar.disabled = false;
+      botaoEntrar.textContent = "Entrar";
+    }
+  }
+
+  botaoEntrar.addEventListener("click", entrar);
+  campoSenha.addEventListener("keydown", (e) => { if (e.key === "Enter") entrar(); });
+  campoSenha.focus();
+
+  // ---------- render ----------
+
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    }[c]));
+  }
+
+  function corPessoa(cfg, cartao){
+    const pessoas = (cfg.cores && cfg.cores.pessoas) || {};
+    const textoTudo = (cartao.titulo + " " + Object.values(cartao.campos||{}).join(" "));
+    for (const nome in pessoas){
+      if (textoTudo.toLowerCase().includes(nome.toLowerCase())) return pessoas[nome].cor;
+    }
+    return null;
+  }
+
+  function renderCartao(cfg, cartao, camposCard){
+    const cor = corPessoa(cfg, cartao);
+    const campos = (camposCard||[]).filter((c) => cartao.campos && cartao.campos[c]);
+    return (
+      '<div class="cartao" style="' + (cor ? "border-left-color:"+cor : "") + '">' +
+        '<div class="titulo">' + esc(cartao.titulo) + '</div>' +
+        campos.map((c) => '<div class="campo"><b>' + esc(c) + ':</b> ' + esc(cartao.campos[c]) + '</div>').join("") +
+      '</div>'
+    );
+  }
+
+  function grade(cfg, cartoes, camposCard){
+    if (!cartoes || !cartoes.length) return '<div class="vazio">nada por aqui ainda.</div>';
+    return '<div class="grade-cartoes">' + cartoes.map((c) => renderCartao(cfg, c, camposCard)).join("") + '</div>';
+  }
+
+  function renderLista(cfg, bloco){
+    return grade(cfg, bloco.cartoes, bloco.camposCard);
+  }
+
+  function renderCalendario(cfg, bloco){
+    const campoData = bloco.campoData || "Data";
+    const eventos = (bloco.eventos||[]).slice().sort((a,b)=> (a.campos[campoData]||"").localeCompare(b.campos[campoData]||""));
+    let html = "";
+    if (eventos.length){
+      html += '<ul class="lista-eventos">' + eventos.map((c) => {
+        const outros = (bloco.camposCard||[]).filter((x)=>x!==campoData && c.campos[x]).map((x)=>c.campos[x]).join(" · ");
+        return '<li><span class="data">' + esc(c.campos[campoData]) + '</span><span>' + esc(c.titulo) + (outros ? ' — <span style="color:var(--texto-suave)">'+esc(outros)+'</span>' : '') + '</span></li>';
+      }).join("") + '</ul>';
+    } else {
+      html += '<div class="vazio">nenhum compromisso com data marcada.</div>';
+    }
+    if (bloco.semData && bloco.semData.length){
+      html += '<h4 style="margin:16px 0 8px;font-size:12px;color:var(--texto-suave);text-transform:uppercase;">Sem data marcada</h4>';
+      html += grade(cfg, bloco.semData, bloco.camposCard);
+    }
+    return html;
+  }
+
+  function renderKanban(cfg, bloco){
+    const estagios = bloco.estagios || [];
+    return '<div class="kanban">' + estagios.map((sigla) => {
+      const doEstagio = (bloco.cartoes||[]).filter((c) => c.campos[bloco.campoEstagio] === sigla);
+      return (
+        '<div class="kanban-col"><h4>' + esc(sigla) + ' <span>' + doEstagio.length + '</span></h4>' +
+        doEstagio.map((c) => renderCartao(cfg, c, bloco.camposCard)).join("") +
+        (doEstagio.length ? '' : '<div class="vazio">—</div>') +
+        '</div>'
+      );
+    }).join("") + '</div>';
+  }
+
+  function renderFunil(cfg, bloco){
+    const estagios = bloco.estagios || [];
+    return '<div class="funil">' + estagios.map((sigla) => {
+      const doEstagio = (bloco.cartoes||[]).filter((c) => c.campos[bloco.campoEstagio] === sigla);
+      return (
+        '<div class="funil-col"><h4>' + esc(sigla) + ' (' + doEstagio.length + ')</h4>' +
+        (doEstagio.length ? doEstagio.map((c) => renderCartao(cfg, c, bloco.camposCard)).join("") : '<div class="vazio">nenhum ainda</div>') +
+        '</div>'
+      );
+    }).join("") + '</div>';
+  }
+
+  function renderChecklist(bloco){
+    const itens = (bloco.checklist && bloco.checklist.itens) || [];
+    if (!itens.length) return '<div class="vazio">nada na lista ainda.</div>';
+    return '<ul class="checklist">' + itens.map((it) => (
+      '<li class="' + (it.feito ? 'feito' : '') + '"><span class="caixa">' + (it.feito ? '✓' : '') + '</span><span class="txt">' + esc(it.texto) + '</span></li>'
+    )).join("") + '</ul>';
+  }
+
+  function renderStats(bloco){
+    const numeros = (bloco.stats && bloco.stats.numeros) || [];
+    if (!numeros.length) return '<div class="vazio">sem números ainda.</div>';
+    return '<div class="stats">' + numeros.map((n) => (
+      '<div class="stat-tile"><div class="rotulo">' + esc(n.rotulo) + '</div><div class="valor">' + esc(n.valor) + '</div></div>'
+    )).join("") + '</div>';
+  }
+
+  // markdown bem simples: **negrito**, *itálico* e linhas "- item" viram <ul>.
+  // Não é um parser completo — só o suficiente pros textos livres do painel.
+  function markdownLeve(texto){
+    const linhas = (texto||"").split("\n");
+    let html = "";
+    let dentroLista = false;
+    const paragrafo = [];
+    function fecharParagrafo(){
+      if (paragrafo.length){
+        html += "<p>" + paragrafo.join("<br>") + "</p>";
+        paragrafo.length = 0;
+      }
+    }
+    function inline(s){
+      let out = esc(s);
+      out = out.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      out = out.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
+      return out;
+    }
+    linhas.forEach((linha) => {
+      const mItem = linha.match(/^\s*[-*]\s+(.+)$/);
+      if (mItem){
+        fecharParagrafo();
+        if (!dentroLista){ html += "<ul>"; dentroLista = true; }
+        html += "<li>" + inline(mItem[1]) + "</li>";
+        return;
+      }
+      if (dentroLista){ html += "</ul>"; dentroLista = false; }
+      if (!linha.trim()){ fecharParagrafo(); return; }
+      paragrafo.push(inline(linha));
+    });
+    if (dentroLista) html += "</ul>";
+    fecharParagrafo();
+    return html;
+  }
+
+  function renderTexto(bloco){
+    const t = bloco.texto || {};
+    return '<div class="texto-corpo texto-md">' + markdownLeve((t.corpo||"").trim()) + '</div>';
+  }
+
+  function renderBloco(cfg, bloco){
+    let corpo = "";
+    switch(bloco.tipo){
+      case "lista": corpo = renderLista(cfg, bloco); break;
+      case "calendario": corpo = renderCalendario(cfg, bloco); break;
+      case "kanban": corpo = renderKanban(cfg, bloco); break;
+      case "funil": corpo = renderFunil(cfg, bloco); break;
+      case "checklist": corpo = renderChecklist(bloco); break;
+      case "stats": corpo = renderStats(bloco); break;
+      case "texto": corpo = renderTexto(bloco); break;
+      case "tarefasPessoa": corpo = grade(cfg, bloco.cartoes, bloco.camposCard); break;
+      default: corpo = grade(cfg, bloco.cartoes, bloco.camposCard);
+    }
+    return (
+      '<div class="bloco">' +
+        '<h3>' + esc(bloco.titulo||"") + '</h3>' +
+        (bloco.desc ? '<p class="desc">' + esc(bloco.desc) + '</p>' : '') +
+        corpo +
+      '</div>'
+    );
+  }
+
+  function formatarDataHora(iso){
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString("pt-BR", { dateStyle:"short", timeStyle:"short" });
+    } catch(e){ return iso; }
+  }
+
+  function montarPainel(estado){
+    const cfg = estado.config;
+    const nav = document.getElementById("nav");
+    const secoes = document.getElementById("secoes");
+    const rodapeNav = document.getElementById("rodape-nav");
+    const atualizado = document.getElementById("atualizado");
+
+    atualizado.textContent = estado.geradoEm ? ("atualizado em " + formatarDataHora(estado.geradoEm)) : "";
+    rodapeNav.textContent = (cfg.negocio || "") + " — espelho automático, atualizado todo dia às 17h.";
+
+    const abas = [];
+
+    // aba 0: visão geral (resumo da Bloom + semana)
+    abas.push({ id:"geral", titulo:"Visão geral", render: () => {
+      let html = "";
+      if (estado.resumoBloom && estado.resumoBloom.corpo){
+        html += '<div class="resumo-bloom"><h3>' + esc(estado.resumoBloom.titulo || "Resumo da Bloom") + '</h3><div class="texto-corpo texto-md">' + markdownLeve(estado.resumoBloom.corpo.trim()) + '</div></div>';
+      }
+      if (estado.hojeSemana){
+        html += '<div class="bloco"><h3>Semana</h3>' + renderCalendario(cfg, estado.hojeSemana) + '</div>';
+      }
+      return html || '<div class="vazio">sem resumo ainda.</div>';
+    }});
+
+    (estado.setores||[]).forEach((setor) => {
+      abas.push({
+        id: setor.id,
+        titulo: setor.titulo,
+        num: setor.num,
+        render: () => (setor.blocos||[]).map((b) => renderBloco(cfg, b)).join("")
+      });
+    });
+
+    nav.innerHTML = abas.map((a, i) => (
+      '<li><button data-id="' + a.id + '" class="' + (i===0?"ativo":"") + '"><span class="num">' + (a.num!=null ? a.num : "•") + '</span>' + esc(a.titulo) + '</button></li>'
+    )).join("");
+
+    secoes.innerHTML = abas.map((a, i) => (
+      '<div class="secao ' + (i===0?"ativa":"") + '" data-id="' + a.id + '">' + a.render() + '</div>'
+    )).join("");
+
+    document.getElementById("titulo-secao").textContent = abas[0].titulo;
+
+    nav.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        nav.querySelectorAll("button").forEach((b) => b.classList.remove("ativo"));
+        btn.classList.add("ativo");
+        const id = btn.getAttribute("data-id");
+        secoes.querySelectorAll(".secao").forEach((s) => s.classList.toggle("ativa", s.getAttribute("data-id")===id));
+        document.getElementById("titulo-secao").textContent = abas.find((a)=>a.id===id).titulo;
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
